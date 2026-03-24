@@ -1,5 +1,5 @@
 ### Для запуска бота нужно подправить строки в файле ```data.env```:
-```python
+```env
 token=TOKEN
 TELEGRAM_TOKEN=TOKEN
 CHAT_ID=YOUR_TG_ID # можно поставить свой id (кому бот присылает дз)
