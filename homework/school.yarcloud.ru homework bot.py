@@ -35,18 +35,6 @@ else:
     url = url1
     week_day = 0
 
-# Создаем объекты бота и диспетчера
-bot = Bot(token)
-
-# получаем день недели и выбираем ссылку
-week_day = datetime.now().isoweekday() - 1
-if week_day < 5:
-    url = url0
-    week_day += 1
-else:
-    url = url1
-    week_day = 0
-
 # настройки открытия браузера
 service = Service()
 options = webdriver.ChromeOptions()
