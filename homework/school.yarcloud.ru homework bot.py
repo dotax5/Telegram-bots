@@ -7,18 +7,18 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from dotenv import load_dotenv
+import os
+load_dotenv("data.env")
 
 
 # все данные
-chat_id = YOUR_TG_ID # можно поставить свой id (кому бот присылает дз)
-phone_number = "PHONE_NUMBER" 
-password = "PASSWORD_GOSUSLUGI"
-token = "TOKEN"
-
-
+chat_id = int(os.getenv("CHAT_ID"))
+phone_number = os.environ.get("PHONE_NUMBER")
+password = os.getenv("PASSWORD")
+token = os.getenv("TELEGRAM_TOKEN")
 url = None
-url0 = "https://school.yarcloud.ru/journal-app/u.543/week.0" 
+url0 = "https://school.yarcloud.ru/journal-app/u.543/week.0" # поменять -1 на 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 url1 = "https://school.yarcloud.ru/journal-app/u.543/week.-1"
 
 # Создаем объекты бота и диспетчера
@@ -32,12 +32,12 @@ if week_day < 5:
 else:
     url = url1
     week_day = 0
-
+week_day = 0
 # настройки открытия браузера
 service = Service()
 options = webdriver.ChromeOptions()
 options.add_argument('--no-sandbox')
-# # options.add_argument('headless') # можно убрать, но тогда при запуске программы будет открываться браузер
+#options.add_argument('headless') # можно включить, но тогда при запуске программы будет открываться браузер
 
 # функция по отправке сообщения
 async def send_message(chat_id, msg):
@@ -53,7 +53,8 @@ async def send_message(chat_id, msg):
         await bot.pin_chat_message(chat_id=chat_id, message_id=sent_message.message_id)
 
 
-def main():
+# -1002453040348 айди 7в писать
+async def main():
     try:
         # открытие сайта
         driver = webdriver.Chrome(service=service, options=options)
@@ -107,18 +108,16 @@ def main():
             try:
                 name_lesson = lesson.select_one('.js-rt_licey-dnevnik-subject').text
                 task_lesson = lesson.select_one('.dnevnik-lesson__task').text
-                # lesson.select_one(".dnevnik-lesson__attach").get("href")
-                msg += f"{name_lesson.strip()}: {task_lesson.strip()}"
+                try:
+                    download_link = lesson.find('a', class_='button button--outline button--purple').get('href')
+                    msg += f"{name_lesson.strip()}: {task_lesson.strip()} ссылка для скачивания:{download_link}"
+                except:
+                    msg += f"{name_lesson.strip()}: {task_lesson.strip()}"
                 msg += "\n"
             except:
                 pass
-        asyncio.get_event_loop().run_until_complete(
-            send_message(chat_id, msg)
-        )
+        await send_message(chat_id, msg)
     except:
-        asyncio.get_event_loop().run_until_complete(
-            send_message(your_id, f"Что-то пошло не так")
-        )
-
+        await send_message(chat_id, f"Что-то пошло не так")
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
